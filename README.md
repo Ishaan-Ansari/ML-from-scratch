@@ -21,3 +21,27 @@ The goal of this project is to:
 - **Principal Component Analysis (PCA)**: A dimensionality reduction technique that transforms data into a set of uncorrelated variables called principal components.
 
 More algorithms will be added over time.
+
+## 🛠️ How to Use
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Ishaan-Ansari/ML-from-scratch.git
+   ```
+2. Navigate to a specific model:
+   ```bash
+   cd ML-from-scratch[Folder_Name]
+   ```
+3. Run Jupyter notebooks:
+   ```bash
+   jupyter notebook
+   ```
+4. Follow the instructions within each notebook.
+
+## 📌 Contributions & Feedback
+This project is a work in progress! If you have suggestions, feel free to **fork the repo**, submit **issues**, or create **pull requests**.
+
+⭐ If you find this helpful, **star this repository** and stay tuned for more updates!
+
+---
+
+This keeps it **clean, structured, and informative**. Let me know if you need modifications! 🚀
