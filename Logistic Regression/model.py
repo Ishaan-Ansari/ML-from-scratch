@@ -1,3 +1,16 @@
+"""
+Workflow of the Logistic Regression Model:
+
+Step 1: Set the learning rate & number of iterations. Initiate random weight and bias values.
+
+Step 2: Build the logistic regression function (using the sigmoid function).
+
+Step 3: Update the parameters using gradient descent.
+
+Finally, we will get the best model (optimal weight and bias values) as it has the minimum cost function.
+
+Step 4: Build the "predict" function to determine the class of the data point.
+"""
 import numpy as np
 
 class LogisticRegression:
