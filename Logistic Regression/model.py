@@ -1,7 +1,4 @@
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
 
 class LogisticRegression:
     """Logistic Regression using Gradient Descent"""
