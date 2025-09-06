@@ -17,7 +17,7 @@ X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 # Import the LogisticRegression class from model.py
-from log-regress import LogisticRegression
+from model import LogisticRegression
 
 # Train and evaluate the model
 model = LogisticRegression(learning_rate=0.1, iterations=1000)
