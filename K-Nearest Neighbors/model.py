@@ -15,8 +15,8 @@ class KNN:
 
     def _predict(self, x):
         distances = [np.sqrt(np.sum((x_train - x) ** 2)) for x_train in self.X_train]
-        k_indices = np.argsort(distances)[:self.k]
-        k_nearest_labels = [self.y_train[i] for i in k_indices]
+        k_indices = np.argsort(distances)[:self.k]  # np.argsort([2.24, 15.81, 4.12, 8.5, 3.1]) gives us [0, 4, 2, 3, 1]
+        k_nearest_labels = [self.y_train[i] for i in k_indices]     # k nearest labels
         most_common = Counter(k_nearest_labels).most_common(1)
         return most_common[0][0]
         
