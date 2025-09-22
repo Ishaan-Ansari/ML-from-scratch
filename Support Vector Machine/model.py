@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import StandardScaler
+import pdb; pdb.set_trace()
 
 class SVM:
     """
@@ -92,11 +93,13 @@ class SVM:
         """
         Selects the second alpha using heuristic.
         """
+        E1 = self._compute_error(i1)
+
         max_diff = 0
         i2 = -1
 
         for i in range(self.n_samples):
-            if self.alpha[i] > 0 and self.alpha[i] < self.C:
+            if self.alphas[i] > 0 and self.alphas[i] < self.C:
                 E2 = self._compute_error(i)
                 diff = abs(E1 - E2)                                         
                 if diff > max_diff:
@@ -244,7 +247,7 @@ class SVM:
             iteration += 1
 
         # Store support vectors
-        self.support_vectors_indices = np.where(self.alpha > self.tol)[0]
+        self.support_vectors_indices = np.where(self.alphas > self.tol)[0]
         self.support_vectors = X[self.support_vectors_indices]
         self.support_vector_labels = y[self.support_vectors_indices]
         self.support_vector_alphas = self.alphas[self.support_vectors_indices]
@@ -272,4 +275,111 @@ class SVM:
 
         return np.array(predictions)
     
+    def decision_function(self, X):
+        """Compute the decision function values"""
+        if not hasattr(self, 'support_vectors'):
+            raise ValueError("Model not trained yet. Please call 'fit' before 'decision_function'.")
+        
+        decisions = []
+
+        for x in X:
+            decision = 0
+            for i, sv in enumerate(self.support_vectors):
+                decision += (self.support_vector_alphas[i] * self.support_vector_labels[i] *
+                             self._kernel_function(x, sv))
+                
+            decision += self.b
+
+            decisions.append(decision)
+
+        return np.array(decisions)
     
+    def score(self, X, y):
+        """Compute the accuracy of the model."""
+        y_pred = self.predict(X)
+        return np.mean(y_pred == y)
+    
+def plot_svm_decision_boundary(svm, X, y, title="SVM Decision Boundary"):
+    """Plot SVM decision boundary and support vectors"""
+    plt.figure(figsize=(10, 8))
+    
+    # Create a mesh to plot the decision boundary
+    h = 0.1
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                        np.arange(y_min, y_max, h))
+    
+    # Make predictions on the mesh
+    mesh_points = np.c_[xx.ravel(), yy.ravel()]
+    Z = svm.decision_function(mesh_points)
+    Z = Z.reshape(xx.shape)
+    
+    # Plot decision boundary and margins
+    plt.contour(xx, yy, Z, levels=[-1, 0, 1], 
+               linestyles=['--', '-', '--'], colors=['red', 'black', 'red'])
+    plt.contourf(xx, yy, Z, levels=50, alpha=0.3, cmap='RdYlBu')
+    
+    # Plot data points
+    scatter = plt.scatter(X[:, 0], X[:, 1], c=y, cmap='RdYlBu', s=50)
+    
+    # Highlight support vectors
+    if hasattr(svm, 'support_vectors'):
+        plt.scatter(svm.support_vectors[:, 0], svm.support_vectors[:, 1], 
+                   s=100, facecolors='none', edgecolors='black', linewidths=2,
+                   label=f'Support Vectors ({len(svm.support_vectors)})')
+    
+    plt.colorbar(scatter)
+    plt.title(title)
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.show()
+
+def demo_svm():
+    """Demonstrate SVM with different kernels"""
+    
+    # Generate sample data
+    np.random.seed(42)
+    X, y = make_blobs(n_samples=100, centers=2, n_features=2, 
+                     random_state=42, cluster_std=1.5)
+    y[y == 0] = -1  # Convert to -1, 1 labels
+    
+    # Standardize features
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    # Split data
+    split_idx = int(0.8 * len(X))
+    X_train, X_test = X_scaled[:split_idx], X_scaled[split_idx:]
+    y_train, y_test = y[:split_idx], y[split_idx:]
+    
+    # Test different kernels
+    kernels = [
+        ('Linear', 'linear', {}),
+        ('RBF', 'rbf', {'gamma': 1.0}),
+        ('Polynomial', 'poly', {'degree': 3, 'gamma': 1.0})
+    ]
+    
+    for name, kernel, params in kernels:
+        print(f"\n=== {name} Kernel SVM ===")
+        
+        # Create and train SVM
+        svm = SVM(C=1.0, kernel=kernel, **params)
+        svm.fit(X_train, y_train)
+        
+        # Evaluate
+        train_score = svm.score(X_train, y_train)
+        test_score = svm.score(X_test, y_test)
+        
+        print(f"Training accuracy: {train_score:.3f}")
+        print(f"Test accuracy: {test_score:.3f}")
+        
+        # Plot decision boundary
+        plot_svm_decision_boundary(svm, X_scaled, y, 
+                                 f"{name} Kernel SVM (C=1.0)")
+
+
+if __name__ == "__main__":
+    demo_svm()
